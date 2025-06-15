@@ -1,17 +1,10 @@
-import React from 'react';
-import ConnectedAccounts from './components/ConnectedAccounts';
-import ChatTerminal from './components/ChatTerminal';
-import PlatformControls from './components/PlatformControls'; // 👈 Add this
+import EDITHChat from './components/EDITHChat';
 
-function App() {
+function Dashboard() {
   return (
-    <div className="min-h-screen bg-zinc-900 text-white p-4">
-      <h1 className="text-2xl font-bold text-center mb-4">🧠 EDITH Dashboard</h1>
-      <ConnectedAccounts />
-      <PlatformControls /> {/* 👈 Add this below connected accounts */}
-      <ChatTerminal />
+    <div className="p-4">
+      <h1 className="text-xl font-bold mb-4">Welcome, Mrinal — EDITH Command Center</h1>
+      <EDITHChat />
     </div>
   );
 }
-
-export default App;
