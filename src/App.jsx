@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import TaskCard from './components/TaskCard';
 import defaultTasks from './data/tasks';
-import './App.css';
+// import './App.css';
 
 function App() {
   const [tasks, setTasks] = useState(defaultTasks);
