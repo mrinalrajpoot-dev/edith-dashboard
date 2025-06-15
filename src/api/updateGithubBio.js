@@ -1,21 +1,17 @@
-export async function updateGithubBio(newBio) {
-  const response = await fetch("https://api.github.com/user", {
-    method: "PATCH",
+// src/api/updateGithubBio.js
+export const updateGithubBio = async (bio) => {
+  const response = await fetch('https://api.github.com/user', {
+    method: 'PATCH',
     headers: {
-      Authorization: `token ${import.meta.env.VITE_GITHUB_TOKEN}`,
-      Accept: "application/vnd.github+json",
-      "Content-Type": "application/json"
+      Authorization: `Bearer ${import.meta.env.VITE_GITHUB_TOKEN}`,
+      'Content-Type': 'application/json',
     },
-    body: JSON.stringify({
-      bio: newBio
-    })
+    body: JSON.stringify({ bio }),
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || "Failed to update GitHub bio");
+    throw new Error(`Failed to update GitHub bio. Status: ${response.status}`);
   }
 
-  const data = await response.json();
-  return data;
-}
+  return await response.json();
+};
