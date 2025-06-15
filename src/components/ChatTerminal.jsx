@@ -1,4 +1,3 @@
-// src/components/ChatTerminal.jsx
 import React, { useState } from 'react';
 import { updateGithubBio } from '../api/updateGithubBio';
 
