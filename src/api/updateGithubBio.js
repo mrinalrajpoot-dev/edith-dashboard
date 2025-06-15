@@ -10,7 +10,7 @@ export const updateGithubBio = async (bio) => {
   });
 
   if (!response.ok) {
-    throw new Error(`Failed to update GitHub bio. Status: ${response.status}`);
+    throw new Error(`GitHub bio update failed. Status: ${response.status}`);
   }
 
   return await response.json();
