@@ -1,12 +1,14 @@
 import React from 'react';
 import ConnectedAccounts from './components/ConnectedAccounts';
 import ChatTerminal from './components/ChatTerminal';
+import PlatformControls from './components/PlatformControls'; // 👈 Add this
 
 function App() {
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-zinc-950 text-gray-900 dark:text-white p-6">
-      <h1 className="text-3xl font-bold mb-4">🧠 EDITH Dashboard</h1>
+    <div className="min-h-screen bg-zinc-900 text-white p-4">
+      <h1 className="text-2xl font-bold text-center mb-4">🧠 EDITH Dashboard</h1>
       <ConnectedAccounts />
+      <PlatformControls /> {/* 👈 Add this below connected accounts */}
       <ChatTerminal />
     </div>
   );
