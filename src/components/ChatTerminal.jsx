@@ -1,57 +1,63 @@
-import React, { useEffect, useState } from 'react';
-import { supabase } from './supabaseClient';
+import React, { useState, useEffect } from 'react'
+import { supabase } from '../lib/supabaseClient'
+import { getOpenAIReply } from '../lib/openaiClient'
 
 export default function ChatTerminal() {
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState('')
+  const [messages, setMessages] = useState([])
 
   useEffect(() => {
-    fetchMessages();
+    fetchMessages()
+  }, [])
 
-    const channel = supabase
-      .channel('chat-updates')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'edith_chat' }, payload => {
-        setMessages(prev => [...prev, payload.new]);
-      })
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
-
-  const fetchMessages = async () => {
+  async function fetchMessages() {
     const { data, error } = await supabase
       .from('edith_chat')
       .select('*')
-      .order('created_at', { ascending: true });
+      .order('created_at', { ascending: true })
 
-    if (!error) setMessages(data);
-  };
+    if (data) setMessages(data)
+  }
 
-  const sendMessage = async () => {
-    if (!input.trim()) return;
-    const { error } = await supabase.from('edith_chat').insert([
-      { sender: 'user', text: input.trim() }
-    ]);
+  async function handleSend() {
+    if (!input.trim()) return
 
-    if (!error) setInput('');
-  };
+    const userMsg = { sender: 'user', text: input }
+    setMessages([...messages, userMsg])
+    setInput('')
+
+    // Save user message
+    await supabase.from('edith_chat').insert([userMsg])
+
+    // Get EDITH's reply
+    const edithReply = await getOpenAIReply(input)
+    const edithMsg = { sender: 'edith', text: edithReply }
+
+    // Save EDITH message
+    await supabase.from('edith_chat').insert([edithMsg])
+
+    setMessages(prev => [...prev, edithMsg])
+  }
 
   return (
-    <div className="terminal">
-      <h2>EDITH Command Center</h2>
+    <div className="chat-terminal">
       <div className="messages">
-        {messages.map((m, i) => (
-          <div key={i}><strong>{m.sender}:</strong> {m.text}</div>
+        {messages.map((msg, idx) => (
+          <div key={idx} className={`msg ${msg.sender}`}>
+            <strong>{msg.sender}:</strong> {msg.text}
+          </div>
         ))}
       </div>
-      <input
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        placeholder="Type your command..."
-      />
-      <button onClick={sendMessage}>Send</button>
+      <div className="input-area">
+        <input
+          type="text"
+          value={input}
+          placeholder="Type your command..."
+          onChange={e => setInput(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && handleSend()}
+        />
+        <button onClick={handleSend}>Send</button>
+      </div>
     </div>
-  );
+  )
 }
