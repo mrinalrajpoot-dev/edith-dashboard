@@ -1,79 +1,79 @@
 // src/components/ChatTerminal.jsx
-import { useEffect, useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
+
+import { useState, useEffect } from "react";
+import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY
+  import.meta.env.VITE_SUPABASE_KEY
 );
 
 const ChatTerminal = () => {
+  const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  const fetchMessages = async () => {
-    const { data, error } = await supabase
-      .from('edith_chat_history')
-      .select('*')
-      .order('created_at', { ascending: true });
-    if (!error) setMessages(data);
-  };
 
   useEffect(() => {
     fetchMessages();
   }, []);
 
+  const fetchMessages = async () => {
+    const { data, error } = await supabase
+      .from("edith_chat")
+      .select("*")
+      .order("created_at", { ascending: true });
+
+    if (!error) setMessages(data || []);
+  };
+
   const handleSend = async () => {
     if (!input.trim()) return;
 
-    setLoading(true);
-
-    const userMessage = {
-      role: 'user',
-      content: input,
+    const newMessage = {
+      sender: "user",
+      text: input,
     };
 
-    await supabase.from('edith_chat_history').insert([userMessage]);
-
-    // Simulate EDITH's AI response
-    const botMessage = {
-      role: 'edith',
-      content: `You said: "${input}" — this message is stored.`,
+    const aiResponse = {
+      sender: "edith",
+      text: `Processing: "${input}" - EDITH is evolving!`,
     };
 
-    await supabase.from('edith_chat_history').insert([botMessage]);
+    setMessages((prev) => [...prev, newMessage, aiResponse]);
 
-    setInput('');
-    setLoading(false);
-    fetchMessages();
+    // Save to Supabase
+    await supabase.from("edith_chat").insert([
+      { sender: "user", text: input },
+      { sender: "edith", text: aiResponse.text },
+    ]);
+
+    setInput("");
   };
 
   return (
-    <div className="p-4 h-full overflow-y-auto flex flex-col bg-black text-green-400 font-mono">
-      <h1 className="text-xl mb-4">🧠 EDITH Chat Terminal</h1>
+    <div className="w-full p-4 bg-black text-green-400 font-mono">
+      <h2 className="text-xl mb-4">EDITH Command Center</h2>
 
-      <div className="flex-1 overflow-y-auto border border-green-500 rounded-md p-2 mb-4 bg-gray-900">
-        {messages.map((msg) => (
-          <div key={msg.id} className="mb-2">
-            <span className="font-bold">{msg.role === 'user' ? 'You' : 'EDITH'}:</span> {msg.content}
+      <div className="h-96 overflow-y-scroll mb-4 border border-green-600 p-2 rounded">
+        {messages.map((msg, idx) => (
+          <div key={idx} className={`mb-2 ${msg.sender === "edith" ? "text-yellow-400" : ""}`}>
+            <strong>{msg.sender.toUpperCase()}:</strong> {msg.text}
           </div>
         ))}
       </div>
 
-      <div className="flex items-center space-x-2">
+      <div className="flex gap-2">
         <input
+          className="flex-grow p-2 bg-gray-800 text-white border border-green-400 rounded"
+          placeholder="Type your command..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Type here..."
-          className="flex-1 p-2 rounded-md border border-green-500 bg-gray-800 text-white"
+          onKeyDown={(e) => e.key === "Enter" && handleSend()}
         />
         <button
           onClick={handleSend}
-          disabled={loading}
-          className="px-4 py-2 bg-green-600 rounded-md text-white hover:bg-green-700"
+          className="bg-green-600 px-4 py-2 rounded text-white"
         >
-          {loading ? 'Thinking...' : 'Send'}
+          Send
         </button>
       </div>
     </div>
