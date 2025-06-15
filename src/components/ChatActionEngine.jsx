@@ -1,24 +1,37 @@
 import React from 'react';
 
 function ChatActionEngine({ command }) {
-  const handleCommand = (cmd) => {
-    if (cmd.includes("update GitHub bio")) {
-      // GitHub API Integration goes here
-      return "✅ GitHub bio update command recognized. Executing...";
-    } else if (cmd.includes("update LinkedIn bio")) {
-      // Placeholder: This would normally trigger a Puppeteer or OAuth routine
-      return "⚠️ LinkedIn update requires manual trigger due to platform limitations.";
-    } else if (cmd.includes("send resume")) {
-      // Example Action
-      return "📩 Resume sent to the predefined email list.";
-    } else {
-      return "🤖 Sorry, EDITH does not recognize this command yet.";
-    }
+  const normalizedCommand = command.trim().toLowerCase();
+
+  // Add more commands in this object as you grow
+  const actions = {
+    "update github bio": () => (
+      <div>
+        🛠️ EDITH is preparing to update your GitHub bio...<br />
+        <span className="text-yellow-400">Feature coming soon!</span> We'll securely connect to your GitHub via API and update the bio with your latest info.
+      </div>
+    ),
+
+    "help": () => (
+      <div>
+        🤖 <strong>Available commands:</strong><br />
+        - <code>update github bio</code><br />
+        - <code>update linkedin bio</code><br />
+        - <code>show connected platforms</code><br />
+        - <code>generate resume</code><br />
+        - <code>help</code>
+      </div>
+    ),
   };
 
   return (
-    <div className="mt-2 p-3 bg-zinc-700 rounded">
-      <strong>EDITH Response:</strong> {handleCommand(command)}
+    <div className="bg-black mt-4 p-4 rounded-md text-white text-sm border border-gray-700">
+      <strong>EDITH Response:</strong><br />
+      {actions[normalizedCommand] ? (
+        actions[normalizedCommand]()
+      ) : (
+        <span>🧠 Sorry, EDITH does not recognize this command yet.</span>
+      )}
     </div>
   );
 }
