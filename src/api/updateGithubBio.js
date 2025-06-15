@@ -1,4 +1,3 @@
-// src/api/updateGithubBio.js
 export const updateGithubBio = async (bio) => {
   const response = await fetch('https://api.github.com/user', {
     method: 'PATCH',
