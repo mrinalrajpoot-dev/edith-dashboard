@@ -1,8 +1,15 @@
+import React from 'react';
+
 function App() {
   return (
-    <div className="text-center p-10 bg-gray-100 min-h-screen">
-      <h1 className="text-4xl font-bold text-blue-700 mb-4">🧠 EDITH Dashboard</h1>
-      <p className="text-lg text-gray-700">Welcome Mrinal. Everything is synced and ready.</p>
+    <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
+      <div className="text-center p-8 bg-gray-800 rounded-lg shadow-lg">
+        <h1 className="text-4xl font-bold mb-4">Hello, Mrinal 👋</h1>
+        <p className="text-lg mb-6">EDITH Dashboard is live and synced with you.</p>
+        <button className="bg-blue-600 px-4 py-2 rounded hover:bg-blue-500">
+          Add Abilities 🔧
+        </button>
+      </div>
     </div>
   );
 }
